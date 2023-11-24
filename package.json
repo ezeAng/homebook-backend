@@ -1,0 +1,15 @@
+{
+  "name": "tinteriorbackend",
+  "version": "1.0.0",
+  "description": "Backend for Tinterior, to connect to db",
+  "main": "database.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ezekiel",
+  "license": "ISC",
+  "dependencies": {
+    "mysql2": "^3.6.5"
+  }
+}

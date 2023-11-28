@@ -103,6 +103,22 @@ export async function getAllProfiles() {
   return rows[0];
 }
 
+export async function getAllProfilesWithLikesByDesignerId(id) {
+  const [rows] = await pool.query(`
+  Select 
+    P.id AS 'Profile ID', 
+    P.profile_name, 
+    P.author_id, 
+    P.image_url, 
+    P.description, 
+    COUNT(L.user_id) AS 'Likes' 
+  FROM Likes L RIGHT JOIN profiles P ON L.profile_id = P.id 
+  WHERE P.author_id = ?
+  GROUP BY P.id;
+  `, [id]);
+  return rows;
+}
+
 export async function getAllProfilesByDesignerId(id) {
   const [rows] = await pool.query(`
     SELECT * 

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import cors from 'cors';
 
-import { createUser, getAllProfiles, getUserLikes, getUserByUsername, getDesignerById, createProfile, getAllProfilesByDesignerId } from "./database.js";
+import { createUser, getAllProfiles, getUserLikes, getUserByUsername, getDesignerById, createProfile, getAllProfilesWithLikesByDesignerId } from "./database.js";
 
 const app = express();
 app.use(express.json());
@@ -96,7 +96,7 @@ app.get("/profiles", async (req, res) => {
 app.get("/users/profiles", authenticateToken, async (req, res) => {
   
   if (req.user.isDesigner) {
-    const profiles = await getAllProfilesByDesignerId(req.user.rowId);
+    const profiles = await getAllProfilesWithLikesByDesignerId(req.user.rowId);
     res.json(profiles);
   } else {
     res.send("Not a designer");

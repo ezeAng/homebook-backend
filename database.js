@@ -32,16 +32,6 @@ export async function createUser(username, name, email, password) {
   return result.insertId;
 }
 
-
-export async function getUserByEmail(email) {
-  const [rows] = await pool.query(`
-    SELECT *
-    FROM users
-    WHERE email = ?
-  `, [email]);
-  return rows[0];
-}
-
 export async function getUserById(id) {
   const [rows] = await pool.query(`
     SELECT *
@@ -113,13 +103,22 @@ export async function getAllProfiles() {
   return rows[0];
 }
 
+export async function getAllProfilesByDesignerId(id) {
+  const [rows] = await pool.query(`
+    SELECT * 
+    FROM profiles
+    WHERE author_id = ?
+  `, [id]);
+  return rows;
+}
+
 export async function getSubsetProfiles(num) {
   const [rows] = await pool.query(`
     SELECT * 
     FROM profiles
     LIMIT num = ?
   `, [num]);
-  return rows[0];
+  return rows;
 }
 
 export async function createProfile(profileName, authorId, imageUrl, desc) {

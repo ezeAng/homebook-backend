@@ -3,33 +3,46 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 dotenv.config();
+import cors from 'cors';
 
-import { getAllUsers, getUserById, createUser, getAllProfiles, getUserLikes, getAllLikes, getUserByUsername } from "./database.js";
+import { createUser, getAllProfiles, getUserLikes, getUserByUsername, getDesignerById, createProfile, getAllProfilesByDesignerId } from "./database.js";
 
 const app = express();
-
-
 app.use(express.json());
+
+
+
+// use it before all route definitions
+app.use(cors({origin: 'http://localhost:3000'}));
 
 const PORT = 8080;
 app.listen(PORT, () => {
   console.log("Server is running on port: ", PORT);
 });
 
+//Login
 app.post('/users/login', async (req, res) => {
   //Auth User
   const username = req.body.username;
   const userRes = await getUserByUsername(username);
+  var id = userRes.id;
+  var isDesigner = false;
+  if (id) {
+    const designer = await getDesignerById(id);
+    if (designer) {
+      isDesigner = true;
+    }
+  }
+  
+
   if (userRes == null) {
     return res.status(400).send("Cannot find user");
   }
   try {
-    console.log(req.body.password);
-    console.log(userRes.password);
     if (await bcrypt.compare(req.body.password, userRes.password)) {
-      const user = { name : username };
+      const user = { name : userRes.username, rowId : userRes.id, isDesigner: isDesigner };
       const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-      res.json({ accessToken: accessToken });
+      res.json({ accessToken: accessToken, user: user });
     } else {
       res.send('Not allowed');
     }
@@ -39,6 +52,7 @@ app.post('/users/login', async (req, res) => {
   }
 })
 
+//Create user (Signup)
 app.post("/users",async (req, res) => {
   //hash password
   try {
@@ -60,28 +74,57 @@ app.post("/users",async (req, res) => {
     console.log(`Error auth: ${e}`);
     res.status(500).send();
   }
+});
 
+//Get a users Likes of profiles
+app.get('/likes', authenticateToken, async (req, res) => {
+  //console.log("GET LIKES:", req.user.rowId);
+  //const user_id = await getUserByUsername(req.user.name).id;
+  
+  const likes = await getUserLikes(req.user.rowId);
+  res.json(likes);
+})
+
+//Get Profiles to show
+app.get("/profiles", async (req, res) => {
+  //consider adding limit
+  const profiles = await getAllProfiles();
+  res.json(profiles);
+});
+
+//Get designer own Profiles to show
+app.get("/users/profiles", authenticateToken, async (req, res) => {
+  
+  if (req.user.isDesigner) {
+    const profiles = await getAllProfilesByDesignerId(req.user.rowId);
+    res.json(profiles);
+  } else {
+    res.send("Not a designer");
+  }
   
 });
 
-app.get("/users/:id",async (req, res) => {
-  const id = req.params.id;
-  const user = await getUserById(id);
-  res.send(user);
-});
+//Add new profile
+app.post("/profiles", async (req, res) => {
+  try {
+    const profile = { 
+      profileName: req.body.profileName,
+      authorId: req.body.authorId, 
+      imageUrl: req.body.imageUrl,
+      desc: req.body.desc 
+    }
+    await createProfile(
+      profile.profileName,
+      profile.authorId,
+      profile.imageUrl,
+      profile.desc
+    );
+    res.status(201).send(profile);
+  } catch(e) {
+    console.log("Error creating profile: ${e}",e);
+  }
 
-//Likes
-app.get('/likes', authenticateToken, async (req, res) => {
-  const user_id = await getUserByUsername(req.user.name);
-  const likes = await getUserLikes(user_id);
-  res.json(likes)
 })
-
-//Profiles
-app.get("/profiles",async (req, res) => {
-  const profiles = await getAllProfiles();
-  res.send(profiles);
-});
 
 
 

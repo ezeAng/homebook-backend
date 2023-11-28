@@ -1,6 +1,11 @@
 GET http://localhost:8080/likes/2
 
 ###
+GET http://localhost:8080/likes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2hpdGUiLCJyb3dJZCI6NiwiaWF0IjoxNzAwODU2NTE1fQ.f06J2bcizBkxZRXiaQHqeASBUNKM4HbIoVRV5AGGeTw
+
+###
 
 POST http://localhost:8080/users/login
 Content-Type: application/json

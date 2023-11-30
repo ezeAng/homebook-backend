@@ -77,8 +77,8 @@ app.post("/users",async (req, res) => {
 });
 
 //Get a users Likes of profiles
-app.get('/likes', authenticateToken, async (req, res) => {
-  //console.log("GET LIKES:", req.user.rowId);
+app.get('users/likes', authenticateToken, async (req, res) => {
+  console.log("GET LIKES:", req.user.rowId);
   //const user_id = await getUserByUsername(req.user.name).id;
   
   const likes = await getUserLikes(req.user.rowId);

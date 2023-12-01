@@ -13,7 +13,7 @@ app.use(express.json());
 
 
 // use it before all route definitions
-app.use(cors({origin: 'http://localhost:3000'}));
+app.use(cors({origin: ['http://localhost:3000', '*']}));
 
 const PORT = 8080;
 app.listen(PORT, () => {
@@ -53,7 +53,7 @@ app.post('/users/login', async (req, res) => {
 })
 
 //Create user (Signup)
-app.post("/users",async (req, res) => {
+app.post("/users/signup",async (req, res) => {
   //hash password
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -69,7 +69,7 @@ app.post("/users",async (req, res) => {
       user.email, 
       user.password
     );
-    res.status(201).send(user);
+    res.status(201).json({ user: user });;
   } catch(e) {
     console.log(`Error auth: ${e}`);
     res.status(500).send();
@@ -77,7 +77,7 @@ app.post("/users",async (req, res) => {
 });
 
 //Get a users Likes of profiles
-app.get('users/likes', authenticateToken, async (req, res) => {
+app.get('/users/likes', authenticateToken, async (req, res) => {
   console.log("GET LIKES:", req.user.rowId);
   //const user_id = await getUserByUsername(req.user.name).id;
   

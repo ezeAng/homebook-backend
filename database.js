@@ -62,9 +62,10 @@ export async function getAllLikes() {
 
 export async function getUserLikes(id) {
   const [rows] = await pool.query(`
-    SELECT *
-    FROM Likes
-    WHERE user_id = ?
+  SELECT *
+  FROM Likes 
+    JOIN profiles ON Likes.profile_id = profiles.id 
+  WHERE user_id = ?
   `, [id]);
   return rows;
 }

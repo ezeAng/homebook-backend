@@ -7,6 +7,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2hpdGUiL
 
 ###
 
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "eze",
+  "password": "password",
+  "name": "ezeang",
+  "email": "e@a.com"
+
+}
+
+###
 POST http://localhost:8080/users/login
 Content-Type: application/json
 
